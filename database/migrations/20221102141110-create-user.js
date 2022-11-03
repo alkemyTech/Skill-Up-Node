@@ -23,9 +23,10 @@ module.exports = {
       avatar: {
         type: Sequelize.STRING
       },
-      roleId: {
-        type: Sequelize.INTEGER
-      },
+      roleId: { 
+        type: Sequelize.INTEGER, 
+        references: { model: { tableName: 'Role', schema: 'schema' }, key: 'id' },
+        allowNull: false },
       softDeletes: {
         type: Sequelize.STRING
       },
