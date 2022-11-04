@@ -24,8 +24,8 @@ module.exports = {
         type: Sequelize.STRING
       },
       roleId: { 
-        type: Sequelize.INTEGER, 
-        references: { model: { tableName: 'Role', schema: 'schema' }, key: 'id' },
+        type: Sequelize.INTEGER,
+        references: { model: 'Roles' , key: 'id' }, 
         allowNull: false },
       softDeletes: {
         type: Sequelize.STRING
@@ -44,3 +44,4 @@ module.exports = {
     await queryInterface.dropTable('Users');
   }
 };
+
