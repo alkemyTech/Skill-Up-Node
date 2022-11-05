@@ -16,7 +16,6 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   Categories.init({
-    id: DataTypes.INTEGER,
     name: DataTypes.STRING,
     description: DataTypes.STRING
   }, {
