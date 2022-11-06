@@ -29,4 +29,30 @@ module.exports = {
       next(httpError);
     }
   }),
+
+  getAllUsers: catchAsync(async (req, res, next) => {
+    try {
+      const response = await Users.findAll({
+        attributes: ["firstName", "lastName", "email", "createdAt"],
+      });
+
+      response.length > 1
+        ? endpointResponse({
+            res,
+            message: "Users obtained successfully",
+            body: response,
+          })
+        : endpointResponse({
+            res,
+            status: 400,
+            message: "No Users on DB",
+          });
+    } catch (error) {
+      const httpError = createError(
+        error.statusCode,
+        `[Error retrieving users] - [users - GET]: ${error.message}`
+      );
+      next(httpError);
+    }
+  }),
 };
