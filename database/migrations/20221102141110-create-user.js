@@ -28,7 +28,7 @@ module.exports = {
         references: { model: 'Roles' , key: 'id' }, 
         allowNull: false },
       softDeletes: {
-        type: Sequelize.STRING
+        type: Sequelize.DATE
       },
       createdAt: {
         allowNull: false,

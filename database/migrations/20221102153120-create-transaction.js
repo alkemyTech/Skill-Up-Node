@@ -24,6 +24,9 @@ module.exports = {
       date: {
         type: Sequelize.DATE,
       },
+      softDeletes: {
+        type: Sequelize.DATE
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

@@ -26,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         type: DataTypes.DATE,
       },
-      softDeletes: DataTypes.STRING,
+      softDeletes: DataTypes.DATE,
     },
     {
       sequelize,
