@@ -91,5 +91,25 @@ module.exports = {
       const httpError = createError(error.statusCode, error.message);
       next(httpError);
     }
-  })
+  }),
+  getUserById: catchAsync(async (req, res, next) => {
+    const id = req.params.id;
+
+    try {
+      const response = await Users.findByPk(id, {
+        attributes: ["firstName", "lastName", "email", "createdAt"],
+      });
+      endpointResponse({
+            res,
+            message: "User obtained successfully",
+            body: response,
+          })
+    } catch (error) {
+      const httpError = createError(
+        error.statusCode,
+        `[Error retrieving user by ID] - [user - GET]: ${error.message}`
+      );
+      next(httpError);
+    }
+  }),
 };
