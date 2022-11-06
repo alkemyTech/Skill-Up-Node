@@ -40,4 +40,27 @@ module.exports = {
       next(httpError);
     }
   }),
+  getAllTransactions: catchAsync(async (req, res, next) => {
+    try {
+      const response = await Transactions.findAll();
+
+      response.length
+        ? endpointResponse({
+            res,
+            message: "Transactions obtained successfully",
+            body: response,
+          })
+        : endpointResponse({
+            res,
+            code: 400,
+            message: "No Transactions on DB",
+          });
+    } catch (error) {
+      const httpError = createError(
+        error.statusCode,
+        `[Error retrieving transactions] - [Transactions - GET]: ${error.message}`
+      );
+      next(httpError);
+    }
+  }),
 };
