@@ -1,7 +1,8 @@
 const express = require('express')
 const { get } = require('../controllers/index')
-const transactionRoutes = require('./transactions.routes');
-const usersRoutes = require('./users.routes')
+const transactionRoutes = require('./transactions.router');
+const usersRoutes = require('./users.router')
+const categoriesRoutes = require('./categories.router');
 
 const router = express.Router()
 
@@ -9,5 +10,6 @@ const router = express.Router()
 router.get('/', get)
 router.use('/transactions', transactionRoutes);
 router.use('/users', usersRoutes)
+router.use('/categories', categoriesRoutes);
 
 module.exports = router

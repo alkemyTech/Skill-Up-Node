@@ -12,12 +12,16 @@
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js",
-    "test": "mocha ./test/*.js"
+    "test": "mocha ./test/*.js",
+    "create:db": "npx sequelize db:create",
+    "init:db": "npx sequelize db:migrate",
+    "delete:db": "npx sequelize db:drop"
   },
   "engines": {
     "node": ">=0.14"
   },
   "dependencies": {
+    "bcrypt": "^5.1.0",
     "cookie-parser": "~1.4.4",
     "cors": "^2.8.5",
     "debug": "~2.6.9",
