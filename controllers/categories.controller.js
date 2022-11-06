@@ -24,7 +24,6 @@ module.exports = {
   
   getCategories: catchAsync(async (req, res, next) => {
       try {
-        console.log(Categories)
         const response = await Categories.findAll()
         endpointResponse({
           res,
