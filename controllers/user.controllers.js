@@ -36,7 +36,7 @@ module.exports = {
         attributes: ["firstName", "lastName", "email", "createdAt"],
       });
 
-      response.length > 1
+      response
         ? endpointResponse({
             res,
             message: "Users obtained successfully",
