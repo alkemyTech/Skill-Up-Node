@@ -1,5 +1,5 @@
 const express = require("express");
-const { createUsers, deleteUser } = require("../controllers/user.controllers");
+const { createUsers, deleteUser } = require("../controllers/user.controller");
 const createUserSchema = require("../schemas/user/createUserSchema");
 const deleteUserSchema = require("../schemas/user/deleteUserSchema")
 const {

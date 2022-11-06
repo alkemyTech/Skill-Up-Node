@@ -12,7 +12,10 @@
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js",
-    "test": "mocha ./test/*.js"
+    "test": "mocha ./test/*.js",
+    "create:db": "npx sequelize db:create",
+    "init:db": "npx sequelize db:migrate",
+    "delete:db": "npx sequelize db:drop"
   },
   "engines": {
     "node": ">=0.14"
