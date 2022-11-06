@@ -29,4 +29,17 @@ module.exports = {
       next(httpError);
     }
   }),
+
+  deleteUser: catchAsync(async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const user = await Users.update({softDeletes:new Date()},{
+        where:{id}
+      })
+      endpointResponse({ res, message: "successfully deleted user", body: user });
+    } catch (error) {
+      const httpError = createError(error.statusCode, error.message);
+      next(httpError);
+    }
+  })
 };
