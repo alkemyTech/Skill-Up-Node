@@ -2,9 +2,9 @@
 const {
   Model
 } = require('sequelize');
-const { FOREIGNKEYS } = require('sequelize/types/query-types');
+
 module.exports = (sequelize, DataTypes) => {
-  class User extends Model {
+  class Users extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -12,21 +12,21 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      User.hasMany(models.Transaction, {foreignKey: "userId"});
-      User.belongsTo(models.Role, {foreignKey: "roleId"});
+      Users.hasMany(models.Transactions, {foreignKey: "userId"});
+      Users.belongsTo(models.Roles, {foreignKey: "roleId"});
     }
   };
-  User.init({
+  Users.init({
     firstName: DataTypes.STRING,
     lastName: DataTypes.STRING,
     email: DataTypes.STRING,
     password: DataTypes.STRING,
     avatar: DataTypes.STRING,
     roleId: DataTypes.INTEGER,
-    softDeletes: DataTypes.STRING
+    softDeletes: DataTypes.DATE
   }, {
     sequelize,
-    modelName: 'User',
+    modelName: 'Users',
   });
-  return User;
+  return Users;
 };
