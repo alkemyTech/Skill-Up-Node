@@ -39,7 +39,32 @@ module.exports = {
       }
     }),
   
-
+    getCategoryById: catchAsync(async (req, res, next) => {
+      const { id } = req.params;
+      try {
+        const response = await Categories.findByPk(id)
+  
+        if (!response) {
+          const httpError = createHttpError(
+            401,
+            `[Error retrieving Category] - [index - GET]: Couldn't find a category`, 
+          )
+          return next(httpError)
+        }
+  
+        endpointResponse({
+          res,
+          message: 'Category retrieved successfully',
+          body: response,
+        })
+      } catch (error) {
+        const httpError = createHttpError(
+          error.statusCode,
+          `[Error retrieving Category] - [index - GET]: ${error.message}`,
+        )
+        next(httpError)
+      }
+    }),
 }
 
 
