@@ -10,7 +10,7 @@ const router = express.Router();
 
 router.post("/", validateRequestSchema(createUserSchema), createUsers);
 router.get("/", getAllUsers);
-router.delete("/:id", validateRequestSchema(deleteUserSchema), deleteUser)
+router.delete("/:id",validateRequestSchema(deleteUserSchema), deleteUser)
 router.put("/:id", validateRequestSchema(editUserSchema), editUser)
 
 module.exports = router;

@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const { endpointResponse } = require("../helpers/success");
 const { catchAsync } = require("../helpers/catchAsync");
 const { Users } = require("../database/models");
+const jwt = require('../middlewares/token/jwt.middleware')
 
 async function encryptPassword(password) {
   const salt = await bcrypt.genSalt(10);
