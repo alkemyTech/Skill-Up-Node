@@ -43,8 +43,18 @@ module.exports = {
   getAllTransactions: catchAsync(async (req, res, next) => {
     try {
       const response = await Transactions.findAll();
-
-      response.length
+      const idQuery = req.query.userId;
+      if (idQuery) {
+        const responseId = await Transactions.findAll({
+          where: { userId: `${idQuery}` },
+        });
+        endpointResponse({
+          res,
+          message: "successfully",
+          body: responseId,
+        });
+      } else {
+        response.length
         ? endpointResponse({
             res,
             message: "Transactions obtained successfully",
@@ -54,6 +64,7 @@ module.exports = {
             res,
             message: "No Transactions on DB",
           });
+      }
     } catch (error) {
       const httpError = createError(
         error.statusCode,
@@ -61,5 +72,5 @@ module.exports = {
       );
       next(httpError);
     }
-  }),
+  })
 };
