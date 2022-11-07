@@ -72,5 +72,24 @@ module.exports = {
       );
       next(httpError);
     }
-  })
+  }),
+  deleteTransaction: catchAsync(async (req, res, next) => {
+    try {
+      const id = req.params.id;
+      const response = await Transactions.update({softDeletes:new Date()}, {
+        where: { id: `${id}` },
+      });
+      endpointResponse({
+        res,
+        message: "successfully, transaction deleted",
+        body: response,
+      });
+    } catch (error) {
+      const httpError = createHttpError(
+        error.statusCode,
+        `[Error retrieving transaction] - [transaction - DELETE]: ${error.message}`
+      );
+      next(httpError);
+    }
+  }),
 };
