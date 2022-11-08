@@ -1,19 +1,40 @@
-const express = require('express');
-const { postCreateTransaction, getAllTransactions } = require('../controllers/transactions.controller');
-const postTransactionSchema = require('../schemas/transaction/postTransactionSchema');
+const express = require("express");
 const {
-    validateRequestSchema,
-  } = require('../middlewares/validation/validate-schema.middleware');
-const getValidationById = require('../schemas/transaction/getTransactionsSchemaById');
-const { put , deleteTransaction } = require('../controllers/transactions.controller')
-const putValidation  = require('../schemas/transaction/putTransactionShema');
-const deleteValidation = require('../schemas/transaction/deleteTransactionsSchema');
+  put,
+  postCreateTransaction,
+  deleteTransaction,
+  getFindTransaction,
+  getAllTransactions,
+} = require("../controllers/transactions.controller");
+const {
+  validateRequestSchema,
+} = require("../middlewares/validation/validate-schema.middleware");
 
 const router = express.Router();
 
-router.get("/",validateRequestSchema(getValidationById),getAllTransactions);
-router.put('/:id', validateRequestSchema(putValidation), put);
-router.post('/', validateRequestSchema(postTransactionSchema), postCreateTransaction);
-router.delete('/:id', validateRequestSchema(deleteValidation), deleteTransaction);
+const postTransactionSchema = require("../schemas/transaction/postTransactionSchema");
+const getTransactionSchema = require("../schemas/transaction/getTrensactionSchema");
 
-module.exports = router
+const getValidationById = require("../schemas/transaction/getTransactionsSchemaById");
+const putValidation = require("../schemas/transaction/putTransactionShema");
+const deleteValidation = require("../schemas/transaction/deleteTransactionsSchema");
+
+router.get(
+  "/:id",
+  validateRequestSchema(getTransactionSchema),
+  getFindTransaction
+);
+router.put("/:id", validateRequestSchema(putValidation), put);
+router.post(
+  "/",
+  validateRequestSchema(postTransactionSchema),
+  postCreateTransaction
+);
+router.get("/", getAllTransactions);
+router.delete(
+  "/:id",
+  validateRequestSchema(deleteValidation),
+  deleteTransaction
+);
+
+module.exports = router;
