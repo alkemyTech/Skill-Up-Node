@@ -1,5 +1,6 @@
 const express = require("express");
-const { postCreateCategory, getCategories, getCategoryById } = require("../controllers/categories.controller");
+const { postCreateCategory, getCategories, getCategoryById, updateCategory } = require("../controllers/categories.controller");
+
 const {
   validateRequestSchema,
 } = require("../middlewares/validation/validate-schema.middleware");
@@ -14,6 +15,8 @@ router.post(
 );
 
 router.get("/", getCategories);
+router.put("/:id", updateCategory);
 router.get("/:id", getCategoryById);
+
 
 module.exports = router;
