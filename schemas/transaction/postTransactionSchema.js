@@ -1,5 +1,5 @@
 const { ErrorObject } = require('../../helpers/error');
-const { Category, User } = require('../../database/models');
+const { Categories, Users } = require('../../database/models');
 
 module.exports = {
   amount: {
@@ -26,7 +26,7 @@ module.exports = {
     custom: {
       options: async (userId, { req }) => {
         try {
-          const user = await User.findByPk(userId);
+          const user = await Users.findByPk(userId);
           if (!user) throw new ErrorObject('User not found.', 404);
           req.body.user = `${user.firstName} ${user.lastName}`;
         } catch (error) {
@@ -39,7 +39,7 @@ module.exports = {
     custom: {
       options: async (categoryId, { req }) => {
         try {
-          const category = await Category.findByPk(categoryId);
+          const category = await Categories.findByPk(categoryId);
           if (!category) throw new ErrorObject('Category not found.', 404);
           req.body.category = category.name;
         } catch (error) {
