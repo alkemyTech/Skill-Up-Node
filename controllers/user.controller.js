@@ -72,19 +72,29 @@ module.exports = {
   editUser: catchAsync(async (req, res, next) => {
     try {
       const { id } = req.params
-      const { firstName, lastName, email, password, avatar, roleId } = req.body
+      
 
-      await Users.update({
-        firstName,
-        lastName,
-        email,
-        password: await encryptPassword(password),
-        avatar,
-        roleId
-      },
-      {
-        where: {id}
-      })
+      if (req.body.password) {
+        const { firstName, lastName, email, password, avatar, roleId } = req.body;
+        await Users.update({
+          firstName,
+          lastName,
+          email,
+          password: await encryptPassword(password),
+          avatar,
+          roleId
+        },
+        {
+          where: {id}
+        }) 
+      }else{
+        const response = req.body;
+        await Users.update(response,
+        {
+          where: {id}
+        })
+      }
+      
       
       endpointResponse({res, message: "User was edited"})
     }catch(error){
