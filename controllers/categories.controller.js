@@ -15,7 +15,7 @@ module.exports = {
     } catch (error) {
       const httpError = createHttpError(
         error.statusCode,
-        `[Error retrieving category] - [Categories - POST]: ${error.message}`
+        `[Error creating category] - [Categories - POST]: ${error.message}`
       )
       next(httpError)
     }
@@ -26,18 +26,18 @@ module.exports = {
       const response = await Categories.findAll()
       endpointResponse({
         res,
-        message: "Test retrieved successfully",
+        message: "Found all categories successfully",
         body: response,
       })
     } catch (error) {
       const httpError = createHttpError(
         error.statusCode,
-        `[Error retrieving index] - [index - GET]: ${error.message}`
+        `[Error  getting categories] - [index - GET]: ${error.message}`
       )
       next(httpError)
     }
   }),
-  
+
   updateCategory: catchAsync(async (req, res, next) => {
     const { id } = req.params
     const { name, description } = req.body
@@ -49,7 +49,7 @@ module.exports = {
       )
       return next(httpError)
     }
- 
+
     const foundCategory = await Categories.findByPk(id)
 
     if (!foundCategory) {
@@ -75,32 +75,62 @@ module.exports = {
       next(httpError)
     }
   }),
-  
- getCategoryById: catchAsync(async (req, res, next) => {
-      const { id } = req.params;
-      try {
-        const response = await Categories.findByPk(id)
-  
-        if (!response) {
-          const httpError = createHttpError(
-            401,
-            `[Error retrieving Category] - [index - GET]: Couldn't find a category`, 
-          )
-          return next(httpError)
-        }
-  
-        endpointResponse({
-          res,
-          message: 'Category retrieved successfully',
-          body: response,
-        })
-      } catch (error) {
+
+  getCategoryById: catchAsync(async (req, res, next) => {
+    const { id } = req.params;
+    try {
+      const response = await Categories.findByPk(id)
+
+      if (!response) {
         const httpError = createHttpError(
-          error.statusCode,
-          `[Error retrieving Category] - [index - GET]: ${error.message}`,
+          401,
+          `[Error retrieving Category] - [index - GET]: Couldn't find a category`,
         )
-        next(httpError)
+        return next(httpError)
       }
-    }),
-    
+      
+      endpointResponse({
+        res,
+        message: 'Category retrieved successfully',
+        body: response,
+      })
+    } catch (error) {
+      const httpError = createHttpError(
+        error.statusCode,
+        `[Error retrieving Category] - [index - GET]: ${error.message}`,
+      )
+      next(httpError)
+    }
+  }),
+
+
+  deleteCategory: catchAsync(async (req, res, next) => {
+    const { id } = req.params
+
+    const foundCategory = await Categories.findByPk(id)
+
+    if (!foundCategory) {
+      const httpError = createHttpError(
+        401,
+        `[Error deleting category] - [index - DELETE]: Couldn't find a category`
+      )
+      return next(httpError)
+    }
+    try {
+      const response = await foundCategory.destroy({ id })
+
+      endpointResponse({
+        res,
+        message: "Categories deleted successfully",
+        body: response,
+      })
+    } catch (error) {
+      const httpError = createHttpError(
+        error.statusCode,
+        `[Error deleting Categories] - [index - DELETE]: ${error.message}`
+      )
+      next(httpError)
+    }
+  }),
+
 }
