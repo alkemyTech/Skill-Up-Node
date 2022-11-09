@@ -1,5 +1,5 @@
-const {Users} = require('../../database/models')
-const {ErrorObject} = require('../../helpers/error')
+const { Users } = require("../../database/models");
+const { ErrorObject } = require("../../helpers/error");
 
 module.exports = {
   id: {
