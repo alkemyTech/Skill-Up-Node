@@ -59,43 +59,10 @@ module.exports = {
   deleteUser: catchAsync(async (req, res, next) => {
     try {
       const { id } = req.params;
-      const user = await Users.update(
-        { softDeletes: new Date() },
-        {
-          where: { id },
-        }
-      );
-      endpointResponse({
-        res,
-        message: "successfully deleted user",
-        body: user,
-      });
-    } catch (error) {
-      const httpError = createError(error.statusCode, error.message);
-      next(httpError);
-    }
-  }),
-
-  editUser: catchAsync(async (req, res, next) => {
-    try {
-      const { id } = req.params;
-      const { firstName, lastName, email, password, avatar, roleId } = req.body;
-
-      await Users.update(
-        {
-          firstName,
-          lastName,
-          email,
-          password: await encryptPassword(password),
-          avatar,
-          roleId,
-        },
-        {
-          where: { id },
-        }
-      );
-
-      endpointResponse({ res, message: "User was edited" });
+      const user = await Users.update({softDeletes:new Date()},{
+        where:{id}
+      })
+      endpointResponse({ res, message: "successfully deleted user", body: user });
     } catch (error) {
       const httpError = createError(error.statusCode, error.message);
       next(httpError);
@@ -105,29 +72,19 @@ module.exports = {
   editUser: catchAsync(async (req, res, next) => {
     try {
       const { id } = req.params
-      
+      const { firstName, lastName, email, password, avatar, roleId } = req.body
 
-      if (req.body.password) {
-        const { firstName, lastName, email, password, avatar, roleId } = req.body;
-        await Users.update({
-          firstName,
-          lastName,
-          email,
-          password: await encryptPassword(password),
-          avatar,
-          roleId
-        },
-        {
-          where: {id}
-        }) 
-      }else{
-        const response = req.body;
-        await Users.update(response,
-        {
-          where: {id}
-        })
-      }
-      
+      await Users.update({
+        firstName,
+        lastName,
+        email,
+        password: await encryptPassword(password),
+        avatar,
+        roleId
+      },
+      {
+        where: {id}
+      })
       
       endpointResponse({res, message: "User was edited"})
     }catch(error){

@@ -30,9 +30,7 @@ router.post(
   validateRequestSchema(postTransactionSchema),
   postCreateTransaction
 );
-
-router.get("/",validateRequestSchema(getValidationById),getAllTransactions);
-
+router.get("/", getAllTransactions);
 router.delete(
   "/:id",
   validateRequestSchema(deleteValidation),
