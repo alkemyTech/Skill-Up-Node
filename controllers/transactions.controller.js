@@ -60,7 +60,23 @@ module.exports = {
   }),
   getAllTransactions: catchAsync(async (req, res, next) => {
     try {
-      const response = await Transactions.findAll();
+      let { page=0 } = req.query
+
+      const datos = {
+        next:0,
+        previous:0,
+        aux:page,
+        aux2:page
+      }
+
+      page = +page
+      if(page>0){
+        datos.previous = --datos.aux2
+        page+=page
+      }
+      datos.next = ++datos.aux;
+      const response = await Transactions.findAll({offset:+page,limit:2});
+      
       const idQuery = req.query.userId;
       if (idQuery) {
         const responseId = await Transactions.findAll({
@@ -76,7 +92,13 @@ module.exports = {
           ? endpointResponse({
               res,
               message: "Transactions obtained successfully",
-              body: response,
+              body: {
+                Previous:(page===0)
+                  ?false
+                  :`http://localhost:3000/api/transactions?page=${datos.previous}`,
+                next:`http://localhost:3000/api/transactions?page=${datos.next}`,
+                response
+              },
             })
           : endpointResponse({
               res,
