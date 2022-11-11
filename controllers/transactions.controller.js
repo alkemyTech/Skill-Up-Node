@@ -77,12 +77,14 @@ module.exports = {
       }
       datos.offset = datos.offset*10
       datos.next = ++datos.aux;
-      const response = await Transactions.findAll({offset:datos.offset,limit:2});
+      const response = await Transactions.findAll({offset:datos.offset,limit:10});
       
       const idQuery = req.query.userId;
       if (idQuery) {
         const responseId = await Transactions.findAll({
           where: { userId: `${idQuery}` },
+          offset:datos.offset,
+          limit:10
         });
         endpointResponse({
           res,
