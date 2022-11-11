@@ -32,7 +32,26 @@ module.exports = {
 
   getAllUsers: catchAsync(async (req, res, next) => {
     try {
+      let { page=0 } = req.query
+
+      const datos = {
+        next:0,
+        previous:0,
+        aux:page,
+        aux2:page,
+        offset:page
+      }
+
+      page = +page
+      if(page>0){
+        datos.previous = --datos.aux2
+        page+=page
+      }
+      datos.offset = datos.offset*10
+      datos.next = ++datos.aux;
       const response = await Users.findAll({
+        offset:datos.offset,
+        limit:10,
         attributes: ["firstName", "lastName", "email", "createdAt"],
       });
 
@@ -40,7 +59,14 @@ module.exports = {
         ? endpointResponse({
             res,
             message: "Users obtained successfully",
-            body: response,
+            body: {
+              Previous:(page===0)
+                ?false
+                :`http://localhost:3000/api/users?page=${datos.previous}`,
+              next:`http://localhost:3000/api/users?page=${datos.next}`,
+              response
+            },
+            
           })
         : endpointResponse({
             res,
