@@ -6,6 +6,7 @@ const { catchAsync } = require("../helpers/catchAsync");
 module.exports = {
   postCreateTransaction: catchAsync(async (req, res, next) => {
     try {
+      req.body.date = new Date();
       const response = await Transactions.create(req.body);
 
       endpointResponse({

@@ -15,7 +15,8 @@
     "test": "mocha ./test/*.js",
     "create:db": "npx sequelize db:create",
     "init:db": "npx sequelize db:migrate",
-    "delete:db": "npx sequelize db:drop"
+    "delete:db": "npx sequelize db:drop",
+    "seeder": "npx sequelize-cli db:seed:all"
   },
   "engines": {
     "node": ">=0.14"
