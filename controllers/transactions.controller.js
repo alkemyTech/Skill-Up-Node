@@ -66,7 +66,8 @@ module.exports = {
         next:0,
         previous:0,
         aux:page,
-        aux2:page
+        aux2:page,
+        offset:page
       }
 
       page = +page
@@ -74,8 +75,9 @@ module.exports = {
         datos.previous = --datos.aux2
         page+=page
       }
+      datos.offset = datos.offset*10
       datos.next = ++datos.aux;
-      const response = await Transactions.findAll({offset:+page,limit:2});
+      const response = await Transactions.findAll({offset:datos.offset,limit:2});
       
       const idQuery = req.query.userId;
       if (idQuery) {
