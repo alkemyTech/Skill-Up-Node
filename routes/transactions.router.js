@@ -19,6 +19,35 @@ const getValidationById = require("../schemas/transaction/getTransactionsSchemaB
 const putValidation = require("../schemas/transaction/putTransactionShema");
 const deleteValidation = require("../schemas/transaction/deleteTransactionsSchema");
 
+
+/** 
+ * @swagger
+ * components:
+ *     schemas:
+ *       Transactions:
+ *         type: object
+ *         properties:
+ *           description:
+ *             type: string
+ *           amount:
+ *             type: number
+ *             format: float
+ *           userId:
+ *             type: integer
+ *           categoryId:
+ *             type: integer
+ *           softDeletes:
+ *             type: string
+ *             format: date
+ *         required:
+ *            - amount
+ *            - userId
+ *            - categoryId
+ *            - date
+ *            
+ * 
+ */
+
 router.get(
   "/:id",
   validateRequestSchema(getTransactionSchema),

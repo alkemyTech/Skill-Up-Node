@@ -15,6 +15,34 @@ const {
 const getByIdSchema = require("../schemas/user/getByIdSchema");
 const router = express.Router();
 
+/** 
+ * @swagger
+ * components:
+ *     schemas:
+ *       User:
+ *         type: object
+ *         properties:
+ *           firstName:
+ *             type: string
+ *           lastName:
+ *             type: string
+ *           email:
+ *             type: string
+ *           password:
+ *             type: string
+ *           avatar:
+ *             type: string
+ *           roleId:
+ *             type: integer
+ *             default: 2
+ *         required:
+ *            - firstName
+ *            - lastName
+ *            - email
+ *            - password
+ * 
+ */
+
 router.post("/", validateRequestSchema(createUserSchema), createUsers);
 router.get("/", getAllUsers);
 router.get("/:id", validateRequestSchema(getByIdSchema), getUserById);

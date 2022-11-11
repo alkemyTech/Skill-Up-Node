@@ -11,6 +11,23 @@ const { createCategorySchema } = require("../schemas/categories/create.schema");
 
 const router = express.Router();
 
+/** 
+ * @swagger
+ * components:
+ *     schemas:
+ *       Categories:
+ *         type: object
+ *         properties:
+ *           name:
+ *             type: string
+ *           description:
+ *             type: string
+ *         required:
+ *            - name
+ *            
+ * 
+ */
+
 router.post("/",
   validateRequestSchema(createCategorySchema),
   postCreateCategory
