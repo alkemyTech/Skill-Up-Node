@@ -13,6 +13,7 @@ const {
   validateRequestSchema,
 } = require("../middlewares/validation/validate-schema.middleware");
 const getByIdSchema = require("../schemas/user/getByIdSchema");
+const avatarUpload = require("../middlewares/multer/avatarUpload");
 const router = express.Router();
 
 /**
@@ -130,7 +131,7 @@ const router = express.Router();
  *         description: Internal Server Error
  */
 router.get("/", getAllUsers);
-router.post("/", validateRequestSchema(createUserSchema), createUsers);
+router.post("/", avatarUpload, validateRequestSchema(createUserSchema), createUsers);
 
 /**
  * @swagger
@@ -254,7 +255,7 @@ router.post("/", validateRequestSchema(createUserSchema), createUsers);
  * 
  */
 router.get("/:id", validateRequestSchema(getByIdSchema), getUserById);
-router.put("/:id", validateRequestSchema(editUserSchema), editUser);
+router.put("/:id", avatarUpload, validateRequestSchema(editUserSchema), editUser);
 router.delete("/:id", validateRequestSchema(deleteUserSchema), deleteUser);
 
 module.exports = router;
