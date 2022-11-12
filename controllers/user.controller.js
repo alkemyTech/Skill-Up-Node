@@ -39,20 +39,61 @@ module.exports = {
 
   getAllUsers: catchAsync(async (req, res, next) => {
     try {
+      let { page = 0 } = req.query;
+
+      const datos = {
+        next: 0,
+        previous: 0,
+        aux: page,
+        aux2: page,
+        offset: page,
+        count: 0,
+        pages: 0,
+      };
+
+      page = +page;
+      if (page > 0) {
+        datos.previous = --datos.aux2;
+        page += page;
+      }
+      datos.offset = datos.offset * 10;
+      datos.next = ++datos.aux;
+
+      datos.count = await Users.count();
+      datos.pages = Math.ceil(datos.count / 10);
+
       const response = await Users.findAll({
+        offset: datos.offset,
+        limit: 10,
         attributes: ["firstName", "lastName", "email", "createdAt"],
       });
 
-      response
+      response.length
         ? endpointResponse({
             res,
             message: "Users obtained successfully",
-            body: response,
+            body: {
+              pages: datos.pages,
+              Previous:
+                page === 0
+                  ? false
+                  : `http://localhost:3000/api/users?page=${datos.previous}`,
+              next:
+                datos.next === datos.pages
+                  ? false
+                  : `http://localhost:3000/api/users?page=${datos.next}`,
+              response: response.length === 0 ? `No more user on DB` : response,
+            },
           })
         : endpointResponse({
             res,
             status: 400,
-            message: "No Users on DB",
+            message: {
+              msg: "No Transactions on DB",
+              previous: `http://localhost:3000/api/transactions?page=${
+                datos.pages - 1
+              }`,
+            },
           });
     } catch (error) {
       const httpError = createError(
@@ -66,10 +107,17 @@ module.exports = {
   deleteUser: catchAsync(async (req, res, next) => {
     try {
       const { id } = req.params;
-      const user = await Users.update({softDeletes:new Date()},{
-        where:{id}
-      })
-      endpointResponse({ res, message: "successfully deleted user", body: user });
+      const user = await Users.update(
+        { softDeletes: new Date() },
+        {
+          where: { id },
+        }
+      );
+      endpointResponse({
+        res,
+        message: "successfully deleted user",
+        body: user,
+      });
     } catch (error) {
       const httpError = createError(error.statusCode, error.message);
       next(httpError);
@@ -78,31 +126,32 @@ module.exports = {
 
   editUser: catchAsync(async (req, res, next) => {
     try {
-      const { id } = req.params
-      
+      const { id } = req.params;
       if (req.body.password) {
-        const { firstName, lastName, email, password, avatar, roleId } = req.body;
-        await Users.update({
-          firstName,
-          lastName,
-          email,
-          password: await encryptPassword(password),
-          avatar,
-          roleId
-        },
-        {
-          where: {id}
-        }) 
-      }else{
+        const { firstName, lastName, email, password, avatar, roleId } =
+          req.body;
+        await Users.update(
+          {
+            firstName,
+            lastName,
+            email,
+            password: await encryptPassword(password),
+            avatar,
+            roleId,
+          },
+          {
+            where: { id },
+          }
+        );
+      } else {
         const response = req.body;
-        await Users.update(response,
-        {
-          where: {id}
-        })
+        await Users.update(response, {
+          where: { id },
+        });
       }
-      
-      endpointResponse({res, message: "User was edited"})
-    }catch(error){
+      endpointResponse({ res, message: "User was edited" });
+    } catch (error) {
+
       const httpError = createError(error.statusCode, error.message);
       next(httpError);
     }
@@ -116,10 +165,10 @@ module.exports = {
       });
 
       endpointResponse({
-            res,
-            message: "User obtained successfully",
-            body: response,
-          })
+        res,
+        message: "User obtained successfully",
+        body: response,
+      });
     } catch (error) {
       const httpError = createError(
         error.statusCode,
