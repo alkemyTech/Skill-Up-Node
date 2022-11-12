@@ -60,55 +60,106 @@ module.exports = {
   }),
   getAllTransactions: catchAsync(async (req, res, next) => {
     try {
-      let { page=0 } = req.query
+      let { page = 0 } = req.query;
 
       const datos = {
-        next:0,
-        previous:0,
-        aux:page,
-        aux2:page,
-        offset:page
+        next: 0,
+        previous: 0,
+        aux: page,
+        aux2: page,
+        offset: page,
+        count: 0,
+        paginas: 0,
+      };
+      page = +page;
+      if (page > 0) {
+        datos.previous = --datos.aux2;
+        page += page;
       }
-      page = +page
-      if(page>0){
-        datos.previous = --datos.aux2
-        page+=page
-      }
-      datos.offset = datos.offset*10
+      datos.offset = datos.offset * 10;
       datos.next = ++datos.aux;
-      const response = await Transactions.findAll({offset:datos.offset,limit:10});
-      
+
       const idQuery = req.query.userId;
       if (idQuery) {
+        datos.count = await Transactions.count({
+          where: { userId: idQuery },
+        });
+        datos.paginas = Math.ceil(datos.count / 10);
+
         const responseId = await Transactions.findAll({
           where: { userId: `${idQuery}` },
-          offset:datos.offset,
-          limit:10
+          offset: datos.offset,
+          limit: 10,
         });
-        endpointResponse({
-          res,
-          message: "successfully",
-          body: responseId,
-        });
+        responseId.length
+          ? endpointResponse({
+              res,
+              message: "successfully",
+              body: {
+                paginas:datos.paginas,
+                Previous:
+                  page === 0
+                    ? false
+                    : `http://localhost:3000/api/transactions?page=${datos.previous}`,
+                next:
+                  datos.next === datos.paginas
+                    ? false
+                    : `http://localhost:3000/api/transactions?page=${datos.next}`,
+                responseId:
+                  responseId.lenght === 0
+                    ? "No more transaction on DB"
+                    : responseId,
+              },
+            })
+          : endpointResponse({
+              res,
+              message: {
+                msg: "No Transactions on DB",
+                previous: `http://localhost:3000/api/transactions?page=${
+                  datos.paginas - 1
+                }`,
+              },
+            });
       } else {
+        datos.count = await Transactions.count();
+        datos.paginas = Math.ceil(datos.count / 10);
+
+        const response = await Transactions.findAll({
+          offset: datos.offset,
+          limit: 10,
+        });
         response.length
           ? endpointResponse({
               res,
               message: "Transactions obtained successfully",
               body: {
-                Previous:(page===0)
-                  ?false
-                  :`http://localhost:3000/api/transactions?page=${datos.previous}`,
-                next:`http://localhost:3000/api/transactions?page=${datos.next}`,
-                response
+                paginas: datos.paginas,
+                Previous:
+                  page === 0
+                    ? false
+                    : `http://localhost:3000/api/transactions?page=${datos.previous}`,
+                next:
+                  datos.next === datos.paginas
+                    ? false
+                    : `http://localhost:3000/api/transactions?page=${datos.next}`,
+                response:
+                  response.lenght === 0
+                    ? "No more transaction on DB"
+                    : response,
               },
             })
           : endpointResponse({
               res,
-              message: "No Transactions on DB",
+              message: {
+                msg: "No Transactions on DB",
+                previous: `http://localhost:3000/api/transactions?page=${
+                  datos.paginas - 1
+                }`,
+              },
             });
       }
     } catch (error) {
+      console.log(error);
       const httpError = createError(
         error.statusCode,
         `[Error retrieving transactions] - [Transactions - GET]: ${error.message}`
