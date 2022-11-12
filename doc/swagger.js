@@ -11,7 +11,7 @@ const swaggerSpec = {
       description: "Develop a digital wallet to integrate into customers' Homebanking and facilitate their transactions in a fast, fluid and secure way ",
       termsOfService: "http://swagger.io/terms/",
       contact: {
-        email: "waltongerman@gmail.com luisdelaespriellaj@hotmail.com cavalerohugo92@gmail.com arielcesarantoniovillafuerte@gmail.com brayanandresrl@ufps.edu.co canterosagustindev@gmail.com"
+        email: "waltongerman@gmail.com ; luisdelaespriellaj@hotmail.com ; cavalerohugo92@gmail.com ; arielcesarantoniovillafuerte@gmail.com ; brayanandresrl@ufps.edu.co ; canterosagustindev@gmail.com; federicofucci@hotmail.com; ganozikovsky@gmail.com; marcello.alfaro@outlook.com"
       },
       version: "1.0.0",
     },
