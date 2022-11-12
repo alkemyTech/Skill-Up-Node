@@ -3,6 +3,8 @@ const bcrypt = require("bcrypt");
 const { endpointResponse } = require("../helpers/success");
 const { catchAsync } = require("../helpers/catchAsync");
 const { Users } = require("../database/models");
+const { encode, decode } = require("../middlewares/jwt/jwt-methods")
+const {userPayload, userResponse} = require("../helpers/tokenPayloads")
 
 async function encryptPassword(password) {
   const salt = await bcrypt.genSalt(10);
@@ -11,9 +13,10 @@ async function encryptPassword(password) {
 
 module.exports = {
   createUsers: catchAsync(async (req, res, next) => {
+    
     try {
       const { firstName, lastName, email, password, roleId, avatar } = req.body;
-
+      
       const user = await Users.create({
         firstName,
         lastName,
@@ -23,7 +26,11 @@ module.exports = {
         avatar,
       });
 
-      endpointResponse({ res, message: "Users was created", body: user });
+      const payload = userPayload(password, user.id, roleId, email)
+      const token = await encode(payload)
+      const response = userResponse(firstName, lastName, email, token)
+
+      endpointResponse({ res, message: "Users was created", body: response });
     } catch (error) {
       const httpError = createError(error.statusCode, error.message);
       next(httpError);
@@ -73,7 +80,6 @@ module.exports = {
     try {
       const { id } = req.params
       
-
       if (req.body.password) {
         const { firstName, lastName, email, password, avatar, roleId } = req.body;
         await Users.update({
@@ -95,7 +101,6 @@ module.exports = {
         })
       }
       
-      
       endpointResponse({res, message: "User was edited"})
     }catch(error){
       const httpError = createError(error.statusCode, error.message);
@@ -109,6 +114,7 @@ module.exports = {
       const response = await Users.findByPk(id, {
         attributes: ["firstName", "lastName", "email", "createdAt"],
       });
+
       endpointResponse({
             res,
             message: "User obtained successfully",

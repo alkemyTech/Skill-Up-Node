@@ -2,12 +2,18 @@ const createHttpError = require("http-errors");
 const { Transactions } = require("../database/models");
 const { endpointResponse } = require("../helpers/success");
 const { catchAsync } = require("../helpers/catchAsync");
+const { encode, decode } = require("../middlewares/jwt/jwt-methods")
+const {transactionPayload, transactionResponse} = require("../helpers/tokenPayloads")
 
 module.exports = {
   postCreateTransaction: catchAsync(async (req, res, next) => {
     try {
       req.body.date = new Date();
-      const response = await Transactions.create(req.body);
+      const {id, userId, description, amount, date} = await Transactions.create(req.body);
+
+      const payload = transactionPayload(id, userId)
+      const token = await encode(payload)
+      const response = transactionResponse(description, amount, date, token)
 
       endpointResponse({
         res,
@@ -25,7 +31,11 @@ module.exports = {
   getFindTransaction: catchAsync(async (req, res, next) => {
     try {
       const { id } = req.params;
-      const response = await Transactions.findByPk(id);
+      const {userId, description, amount, date} = await Transactions.findByPk(id);
+      
+      const payload = transactionPayload(id, userId)
+      const token = await encode(payload)
+      const response = transactionResponse(description, amount, date, token)
 
       endpointResponse({
         res,
@@ -61,23 +71,44 @@ module.exports = {
   }),
   getAllTransactions: catchAsync(async (req, res, next) => {
     try {
-      const response = await Transactions.findAll();
+      const transactions = await Transactions.findAll();
+
+      const allTransactions = await Promise.all(transactions.map(async t => {
+      
+        const payload = transactionPayload(t.id, t.userId)
+        const token = await encode(payload)
+        const response = transactionResponse(t.description, t.amount, t.date, token)
+        
+        return response
+      }))
+      
       const idQuery = req.query.userId;
+      
       if (idQuery) {
         const responseId = await Transactions.findAll({
-          where: { userId: `${idQuery}` },
+          where: { userId: idQuery },
         });
+        
+        const allTransactionsResponse = await Promise.all(responseId.map(async t => {
+        
+          const payload = transactionPayload(t.id, t.userId)
+          const token = await encode(payload)
+          const response = transactionResponse(t.description, t.amount, t.date, token)
+          
+          return response
+        }))
+
         endpointResponse({
           res,
           message: "successfully",
-          body: responseId,
+          body: allTransactionsResponse,
         });
       } else {
-        response.length
+        allTransactions.length
           ? endpointResponse({
               res,
               message: "Transactions obtained successfully",
-              body: response,
+              body: allTransactions,
             })
           : endpointResponse({
               res,
