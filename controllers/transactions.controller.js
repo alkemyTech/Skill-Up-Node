@@ -69,7 +69,6 @@ module.exports = {
         aux2:page,
         offset:page
       }
-
       page = +page
       if(page>0){
         datos.previous = --datos.aux2
