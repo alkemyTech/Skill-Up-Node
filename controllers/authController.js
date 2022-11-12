@@ -3,6 +3,7 @@ const { Users } = require('../database/models')
 const { endpointResponse } = require('../helpers/success')
 const { catchAsync } = require('../helpers/catchAsync')
 const { Security } = require('../config/security')
+const {encode, decode} = require("../middlewares/jwt/jwt-methods")
 
 module.exports = {
     login: catchAsync(async (req, res, next) => {
@@ -31,10 +32,16 @@ module.exports = {
                 });
             }
 
+            const token = await encode(user)
+            const response = {
+                email: user.email,
+                token
+            }
+
             endpointResponse({
                 res,
                 message: 'User login successfully',
-                body: { ok: true },
+                body: response,
             });
         } catch (error) {
             const httpError = createHttpError(

@@ -17,11 +17,6 @@ module.exports = {
     },
     trim: true,
   },
-  date: {
-    isDate: {
-      errorMessage: 'Date must be a valid date.',
-    },
-  },
   userId: {
     custom: {
       options: async (userId, { req }) => {
