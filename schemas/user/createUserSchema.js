@@ -2,7 +2,13 @@ const { Users } = require("../../database/models");
 const { ErrorObject } = require("../../helpers/error");
 
 module.exports = {
-  emailRegistred: {
+  email: {
+    isEmail: {
+      errorMessage: "please enter a correct email"
+    },
+    notEmpty: {
+      errorMessage: "email is null"
+    },
     custom: {
       options: async (value, { req }) => {
         const { email } = req.body;
@@ -17,40 +23,19 @@ module.exports = {
       },
     },
   },
-  firstNameNull: {
-    custom: {
-      options: async (value, { req }) => {
-        if (!req.body.firstName) {
-          throw new ErrorObject("firstName is null");
-        }
-      },
-    },
+  firstName: {
+    notEmpty: {
+      errorMessage:"firstName is null"
+    }
   },
-  lastNameNull: {
-    custom: {
-      options: async (value, { req }) => {
-        if (!req.body.lastName) {
-          throw new ErrorObject("lastName is null");
-        }
-      },
-    },
+  lastName: {
+    notEmpty:{
+      errorMessage:"lastName is null"
+    }
   },
-  emailNull: {
-    custom: {
-      options: async (value, { req }) => {
-        if (!req.body.email) {
-          throw new ErrorObject("email is null");
-        }
-      },
-    },
-  },
-  passwordNull: {
-    custom: {
-      options: async (value, { req }) => {
-        if (!req.body.password) {
-          throw new ErrorObject("password is null");
-        }
-      },
-    },
+  password: {
+    notEmpty:{
+      errorMessage:"password is null"
+    }
   },
 };
