@@ -3,9 +3,6 @@ const { Users } = require("../../database/models");
 
 module.exports = {
   userId: {
-    isNumeric: {
-      errorMessage: 'userId must be numeric.',
-    },
     custom: {
       options: async (userId, { req }) => {
         try {
