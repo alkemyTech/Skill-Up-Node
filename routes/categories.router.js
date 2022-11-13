@@ -1,12 +1,17 @@
 const express = require("express");
-const { postCreateCategory, 
-        getCategories, 
-        getCategoryById, 
-        updateCategory,
-        deleteCategory } = require("../controllers/categories.controller");
+const {
+  postCreateCategory,
+  getCategories,
+  getCategoryById,
+  updateCategory,
+  deleteCategory,
+} = require("../controllers/categories.controller");
+const userAuthMiddleware = require("../middlewares/auth/userAuth.middleware");
+const usersTokenAuthMiddleware = require("../middlewares/auth/usersTokenAuth.middleware");
 
-const { validateRequestSchema,
-       } = require("../middlewares/validation/validate-schema.middleware");
+const {
+  validateRequestSchema,
+} = require("../middlewares/validation/validate-schema.middleware");
 const { createCategorySchema } = require("../schemas/categories/create.schema");
 
 const router = express.Router();
@@ -27,8 +32,8 @@ const router = express.Router();
  *          description: This is the description of the category
  *        name:
  *          type: string
- *          description: This is the name of the category      
- * 
+ *          description: This is the name of the category
+ *
  */
 
 /**
@@ -99,8 +104,11 @@ const router = express.Router();
 *          description: error of server
 */
 
-router.post("/",
+router.post(
+  "/",
   validateRequestSchema(createCategorySchema),
+  usersTokenAuthMiddleware,
+  userAuthMiddleware,
   postCreateCategory
 );
 
@@ -134,7 +142,7 @@ router.post("/",
 *            description: Bad Request - some parameter entered does not correspond to the requirements of the endpoint.
 */
 
-router.get("/", getCategories);
+router.get("/", usersTokenAuthMiddleware, getCategories);
 
 /**
  /
@@ -190,9 +198,9 @@ router.get("/", getCategories);
 *          description: error of server
 */
 
-router.get("/:id", getCategoryById);
+router.get("/:id", usersTokenAuthMiddleware, getCategoryById);
 
- /**
+/**
  /
 * @swagger
 * /categories/{id}:
@@ -269,7 +277,12 @@ router.get("/:id", getCategoryById);
 *          description: error of server
 */
 
-router.put("/:id", updateCategory);
+router.put(
+  "/:id",
+  usersTokenAuthMiddleware,
+  userAuthMiddleware,
+  updateCategory
+);
 
 /**
  /
@@ -326,7 +339,11 @@ router.put("/:id", updateCategory);
 *          description: error of server
 */
 
-router.delete("/:id", deleteCategory);
-
+router.delete(
+  "/:id",
+  usersTokenAuthMiddleware,
+  userAuthMiddleware,
+  deleteCategory
+);
 
 module.exports = router;

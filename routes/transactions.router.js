@@ -19,8 +19,10 @@ const getValidationById = require("../schemas/transaction/getTransactionsSchemaB
 const putValidation = require("../schemas/transaction/putTransactionShema");
 const deleteValidation = require("../schemas/transaction/deleteTransactionsSchema");
 
+const userAuthMiddleware = require("../middlewares/auth/userAuth.middleware");
+const usersTokenAuthMiddleware = require("../middlewares/auth/usersTokenAuth.middleware");
 
-/** 
+/**
  * @swagger
  * components:
  *     schemas:
@@ -47,8 +49,8 @@ const deleteValidation = require("../schemas/transaction/deleteTransactionsSchem
  *            - userId
  *            - categoryId
  *            - date
- *            
- * 
+ *
+ *
  */
 
 /**
@@ -87,7 +89,7 @@ const deleteValidation = require("../schemas/transaction/deleteTransactionsSchem
  *                     code: 200
  *                     message: Transactions obtained successfully
  *                     body:
- *                       description: income 
+ *                       description: income
  *                       amount: 1000
  *                       date: 2022-11-10T21:45:49.000Z
  *                       token: eyJhbGciOiJIUzI1NiJ9.MQ.gaKRuIIRNvXiTlyNPE1Kp3SpAQfhrI3r9MrSB1YdMz8
@@ -101,10 +103,10 @@ const deleteValidation = require("../schemas/transaction/deleteTransactionsSchem
  *       description: Get all Transactions
  *       content:
  *         application/json:
- *            schema: 
+ *            schema:
  *              $ref: '#/components/schemas/Transactions'
  *            example:
- *              description: income 
+ *              description: income
  *              amount: 1000
  *              date: 2022-11-10
  *              userId: 1
@@ -113,7 +115,7 @@ const deleteValidation = require("../schemas/transaction/deleteTransactionsSchem
  *            schema:
  *              $ref: '#/components/schemas/Transactions'
  *            example:
- *              description: income 
+ *              description: income
  *              amount: 1000
  *              date: 2022-11-10
  *              userId: 1
@@ -122,7 +124,7 @@ const deleteValidation = require("../schemas/transaction/deleteTransactionsSchem
  *            schema:
  *              $ref: '#/components/schemas/Transactions'
  *            example:
- *              description: income 
+ *              description: income
  *              amount: 1000
  *              date: 2022-11-10
  *              userId: 1
@@ -139,8 +141,8 @@ const deleteValidation = require("../schemas/transaction/deleteTransactionsSchem
  *                 status: true
  *                 code: 200
  *                 message: Transactions obtained successfully
- *                 body: 
- *                   description: income 
+ *                 body:
+ *                   description: income
  *                   amount: 1000
  *                   date: 2022-11-10T21:45:49.000Z
  *                   token: eyJhbGciOiJIUzI1NiJ9.MQ.gaKRuIIRNvXiTlyNPE1Kp3SpAQfhrI3r9MrSB1YdMz8
@@ -148,18 +150,23 @@ const deleteValidation = require("../schemas/transaction/deleteTransactionsSchem
  *         description: Bad Request - some parameter entered does not correspond to the requirements of the endpoint.
  *       '404':
  *         description: Resource not found - User or Category not found.
- *       '422': 
+ *       '422':
  *         description: Unprocessable Entity - Amount must be greater than 0.
  *       '500':
  *         description: Internal Server Error
  */
-router.get("/",validateRequestSchema(getValidationById),getAllTransactions);
+router.get(
+  "/",
+  validateRequestSchema(getValidationById),
+  usersTokenAuthMiddleware,
+  getAllTransactions
+);
 router.post(
   "/",
   validateRequestSchema(postTransactionSchema),
+  usersTokenAuthMiddleware,
   postCreateTransaction
 );
-
 
 /**
  * @swagger
@@ -187,8 +194,8 @@ router.post(
  *                 status: true
  *                 code: 200
  *                 message: Transactions obtained successfully
- *                 body: 
- *                   description: income 
+ *                 body:
+ *                   description: income
  *                   amount: 1000
  *                   date: 2022-11-10T21:45:49.000Z
  *                   token: eyJhbGciOiJIUzI1NiJ9.MQ.gaKRuIIRNvXiTlyNPE1Kp3SpAQfhrI3r9MrSB1YdMz8
@@ -217,7 +224,7 @@ router.post(
  *                schema:
  *                  $ref: '#/components/schemas/Transactions'
  *                example:
- *                  description: income 
+ *                  description: income
  *                  amount: 1000
  *                  date: 2022-11-10
  *                  userId: 1
@@ -226,7 +233,7 @@ router.post(
  *                schema:
  *                  $ref: '#/components/schemas/Transactions'
  *                example:
- *                  description: income 
+ *                  description: income
  *                  amount: 1000
  *                  date: 2022-11-10
  *                  userId: 1
@@ -235,7 +242,7 @@ router.post(
  *                schema:
  *                  $ref: '#/components/schemas/Transactions'
  *                example:
- *                  description: income 
+ *                  description: income
  *                  amount: 1000
  *                  date: 2022-11-10
  *                  userId: 1
@@ -283,7 +290,7 @@ router.post(
  *                 code: 200
  *                 message: successfully, transaction deleted
  *                 body: [1]
- *                   
+ *
  *       '400':
  *         description: Bad Request - The specified Transactions ID is invalid (not a number).
  *       '404':
@@ -295,12 +302,21 @@ router.post(
 router.get(
   "/:id",
   validateRequestSchema(getTransactionSchema),
+  usersTokenAuthMiddleware,
   getFindTransaction
 );
-router.put("/:id", validateRequestSchema(putValidation), put);
+router.put(
+  "/:id",
+  validateRequestSchema(putValidation),
+  usersTokenAuthMiddleware,
+  userAuthMiddleware,
+  put
+);
 router.delete(
   "/:id",
   validateRequestSchema(deleteValidation),
+  usersTokenAuthMiddleware,
+  userAuthMiddleware,
   deleteTransaction
 );
 

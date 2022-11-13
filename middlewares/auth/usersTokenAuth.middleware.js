@@ -1,42 +1,31 @@
-const jwt = require("jsonwebtoken");
 const { endpointResponse } = require("../../helpers/success");
-const { ErrorObject } = require("../../helpers/error");
+const { verify } = require("../jwt/jwt-methods");
+
 require("dotenv").config();
 
 module.exports = async (req, res, next) => {
-    
-  //Get Token from Headears
-  const token = req.headers.authorization.split(" ")[1];
-
+  const header = req.headers.authorization;
   try {
-
-    //Check thath token exist
-    if (!token) {
+    if (!header) {
       endpointResponse({
         res,
-        code: 404,
-        message: "missing token",
-      });
-    } else {
-
-      //Check token validation
-      await jwt.verify(token, process.env.SECRET, (err, decoded) => {
-        if (err) {
-            console.log(err)
-          endpointResponse({
-            res,
-            code: 403,
-            message: "access not authorized",
-            body: err,
-          });
-        } else {
-          req.decoded = decoded;
-          next();
-        }
+        code: 403,
+        message: "You must go to login",
       });
     }
+
+    const token = header.split(" ")[1];
+    const payload = verify(token);
+
+    if (!payload) {
+      endpointResponse({
+        res,
+        code: 403,
+        message: "Access not authorized",
+      });
+    }
+    next();
   } catch (error) {
-    const err = new ErrorObject(error, 401);
-    res.status(401).send(err);
+    next(error);
   }
 };

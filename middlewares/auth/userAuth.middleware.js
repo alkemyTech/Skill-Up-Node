@@ -1,13 +1,13 @@
 const { ErrorObject } = require("../../helpers/error");
 const { endpointResponse } = require("../../helpers/success");
-const { encode, decode } = require("../jwt/jwt-methods");
+const {  decode } = require("../jwt/jwt-methods");
 
 module.exports = async (req, res, next) => {
   //Get Token from Headears
   const token = req.headers.authorization.split(" ")[1];
 
   //Decode Token
-  const tokenDecoded = await decode(token);
+  const tokenDecoded = decode(token);
 
   //Get User Id Form Token
   const userTokenId = tokenDecoded.payload.id;
@@ -26,7 +26,7 @@ module.exports = async (req, res, next) => {
         endpointResponse({
           res,
           code: 403,
-          message: "access denied",
+          message: "Access denied",
         });
       } else {
         next();
@@ -36,6 +36,6 @@ module.exports = async (req, res, next) => {
     }
   } catch (error) {
     const err = new ErrorObject(error, 401);
-    res.status(401).send(error);
+    res.status(401).send(err);
   }
 };
