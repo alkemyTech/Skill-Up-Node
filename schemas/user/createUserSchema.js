@@ -1,6 +1,3 @@
-const { Users } = require("../../database/models");
-const { ErrorObject } = require("../../helpers/error");
-
 module.exports = {
   email: {
     isEmail: {
@@ -8,19 +5,6 @@ module.exports = {
     },
     notEmpty: {
       errorMessage: "email is null"
-    },
-    custom: {
-      options: async (value, { req }) => {
-        const { email } = req.body;
-        const exist = await Users.findOne({
-          where: {
-            email,
-          },
-        });
-        if (exist) {
-          throw new ErrorObject("Email is registred in the database");
-        }
-      },
     },
   },
   firstName: {

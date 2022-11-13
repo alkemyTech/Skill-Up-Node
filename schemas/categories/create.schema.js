@@ -4,6 +4,6 @@ module.exports = {
       optional: false,
       notEmpty: true,
       errorMessage: "name is required",
-    },
+    }
   },
 };

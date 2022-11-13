@@ -13,6 +13,9 @@ const {
   validateRequestSchema,
 } = require("../middlewares/validation/validate-schema.middleware");
 const { createCategorySchema } = require("../schemas/categories/create.schema");
+const { editCategorySchema } = require("../schemas/categories/editCategoriesSchema")
+const { findByIdSchema } = require("../schemas/categories/getByIdSchema")
+const { deleteCategorySchema } = require("../schemas/categories/deleteCategoriesSchema")
 
 const router = express.Router();
 
@@ -106,9 +109,9 @@ const router = express.Router();
 
 router.post(
   "/",
-  validateRequestSchema(createCategorySchema),
   usersTokenAuthMiddleware,
   userAuthMiddleware,
+  validateRequestSchema(createCategorySchema),
   postCreateCategory
 );
 
@@ -198,7 +201,7 @@ router.get("/", usersTokenAuthMiddleware, getCategories);
 *          description: error of server
 */
 
-router.get("/:id", usersTokenAuthMiddleware, getCategoryById);
+router.get("/:id", usersTokenAuthMiddleware, validateRequestSchema(findByIdSchema), getCategoryById);
 
 /**
  /
@@ -277,12 +280,7 @@ router.get("/:id", usersTokenAuthMiddleware, getCategoryById);
 *          description: error of server
 */
 
-router.put(
-  "/:id",
-  usersTokenAuthMiddleware,
-  userAuthMiddleware,
-  updateCategory
-);
+router.put("/:id", usersTokenAuthMiddleware, userAuthMiddleware, validateRequestSchema(editCategorySchema), updateCategory);
 
 /**
  /
@@ -339,11 +337,6 @@ router.put(
 *          description: error of server
 */
 
-router.delete(
-  "/:id",
-  usersTokenAuthMiddleware,
-  userAuthMiddleware,
-  deleteCategory
-);
+router.delete("/:id", usersTokenAuthMiddleware, userAuthMiddleware, validateRequestSchema(deleteCategorySchema), deleteCategory);
 
 module.exports = router;

@@ -1,15 +1,22 @@
 const createHttpError = require("http-errors");
-const { Transactions } = require("../database/models");
+const { Transactions, Users, Categories } = require("../database/models");
 const { endpointResponse } = require("../helpers/success");
 const { catchAsync } = require("../helpers/catchAsync");
 const { encode, decode } = require("../middlewares/jwt/jwt-methods")
 const {transactionPayload, transactionResponse} = require("../helpers/tokenPayloads")
+const { ErrorObject } = require('../helpers/error')
 
 module.exports = {
   postCreateTransaction: catchAsync(async (req, res, next) => {
     try {
       req.body.date = new Date();
-      const {id, userId, description, amount, date} = await Transactions.create(req.body);
+      const {id, userId, description, amount, date, categoryId} = await Transactions.create(req.body);
+      const user = await Users.findByPk(userId)
+      const category = await Categories.findByPk(categoryId)
+
+      if(amount <= 0) throw new ErrorObject('Amount must be greater than 0.', 422)
+      if(!user) throw new ErrorObject('User not found.', 404);
+      if(!category) throw new ErrorObject('Category not found.', 404);
 
       const payload = transactionPayload(id, userId)
       const token = await encode(payload)
@@ -32,6 +39,8 @@ module.exports = {
     try {
       const { id } = req.params;
       const {userId, description, amount, date} = await Transactions.findByPk(id);
+
+      if (!userId) throw new ErrorObject("The transaction could not be found", 404);
       
       const payload = transactionPayload(id, userId)
       const token = await encode(payload)
@@ -56,6 +65,16 @@ module.exports = {
       const response = await Transactions.update(req.body, {
         where: { id: `${id}` },
       });
+
+      if(!response) throw new ErrorObject("id the transaction don't exist", 404); 
+
+      const user = await Users.findByPk(req.body.userId)
+      const category = await Categories.findByPk(req.body.categoryId)
+
+      if(req.body.amount <= 0) throw new ErrorObject('Amount must be greater than 0.', 422)
+      if(!user) throw new ErrorObject('User not found.', 404);
+      if(!category) throw new ErrorObject('Category not found.', 404);
+
       endpointResponse({
         res,
         message: "successfully",
@@ -97,6 +116,9 @@ module.exports = {
           where: { userId: idQuery },
         });
         datos.paginas = Math.ceil(datos.count / 10);
+
+        const user = await Users.findByPk(idQuery);
+        if (!user) throw new ErrorObject("User not found. Check the data entered", 404);
 
         const responseId = await Transactions.findAll({
           where: { userId: idQuery },
@@ -189,7 +211,7 @@ module.exports = {
       }
     } catch (error) {
       console.log(error);
-      const httpError = createError(
+      const httpError = createHttpError(
         error.statusCode,
         `[Error retrieving transactions] - [Transactions - GET]: ${error.message}`
       );
@@ -199,6 +221,14 @@ module.exports = {
   deleteTransaction: catchAsync(async (req, res, next) => {
     try {
       const id = req.params.id;
+      
+      const validation = await Transactions.findOne({
+        where: { id: `${id}` },
+      });
+      if (!validation) {
+        throw new ErrorObject("id the transaction don't exist", 404);
+      }
+
       const response = await Transactions.update(
         { softDeletes: new Date() },
         {

@@ -1,46 +1,36 @@
-const { ErrorObject } = require('../../helpers/error');
-const { Categories, Users } = require('../../database/models');
-
 module.exports = {
   amount: {
     errorMessage: 'Please enter amount.',
-    isNumeric: {
+    isFloat: {
       errorMessage: 'Amount must be numeric.',
     },
-    custom: {
-      options: (amount, { req }) => {
-        if (!amount > 0)
-          throw new ErrorObject('Amount must be greater than 0.', 422);
-
-        return true;
-      },
-    },
-    trim: true,
+    notEmpty: {
+      errorMessage: 'amount is null'
+    }
   },
   userId: {
-    custom: {
-      options: async (userId, { req }) => {
-        try {
-          const user = await Users.findByPk(userId);
-          if (!user) throw new ErrorObject('User not found.', 404);
-          req.body.user = `${user.firstName} ${user.lastName}`;
-        } catch (error) {
-          throw error;
-        }
-      },
+    in: ["body"],
+    isNumeric: {
+      errorMessage: "Id must be numeric"
     },
+    notEmpty: {
+      errorMessage: "userId is null"
+    }
+  },
+  date: {
+    notEmpty: {
+      errorMessage: "date is empty"
+    },
+    isDate: {
+      errorMessage: "date must be a date (AAAA/MM/DD)"
+    }
   },
   categoryId: {
-    custom: {
-      options: async (categoryId, { req }) => {
-        try {
-          const category = await Categories.findByPk(categoryId);
-          if (!category) throw new ErrorObject('Category not found.', 404);
-          req.body.category = category.name;
-        } catch (error) {
-          throw error;
-        }
-      },
+    notEmpty: {
+      errorMessage: "categoryId is null"
     },
-  },
+    isNumeric: {
+      errorMessage: "categoryId must be numeric"
+    }
+  }
 };

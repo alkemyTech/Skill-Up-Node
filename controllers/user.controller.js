@@ -4,7 +4,8 @@ const { endpointResponse } = require("../helpers/success");
 const { catchAsync } = require("../helpers/catchAsync");
 const { Users } = require("../database/models");
 const { encode, decode } = require("../middlewares/jwt/jwt-methods")
-const {userPayload, userResponse} = require("../helpers/tokenPayloads")
+const {userPayload, userResponse} = require("../helpers/tokenPayloads");
+const { ErrorObject } = require("../helpers/error");
 
 async function encryptPassword(password) {
   const salt = await bcrypt.genSalt(10);
@@ -17,6 +18,9 @@ module.exports = {
     try {
       const { firstName, lastName, email, password, roleId, avatar } = req.body;
       
+      const emailExist = await Users.findOne({where: {email}})
+      if(emailExist) throw new ErrorObject("Email exist in the database")
+
       const user = await Users.create({
         firstName,
         lastName,
@@ -107,6 +111,10 @@ module.exports = {
   deleteUser: catchAsync(async (req, res, next) => {
     try {
       const { id } = req.params;
+
+      const userExist = await Users.findByPk(id)
+      if(userExist.softDeletes) throw new ErrorObject("the id does not exist in the database", 404);
+
       const user = await Users.update(
         { softDeletes: new Date() },
         {
@@ -128,8 +136,11 @@ module.exports = {
     try {
       const { id } = req.params;
       if (req.body.password) {
-        const { firstName, lastName, email, password, avatar, roleId } =
-          req.body;
+        const { firstName, lastName, email, password, avatar, roleId } = req.body;
+
+        const userExist = await Users.findByPk(id)
+        if(userExist.softDeletes) throw new ErrorObject("the id does not exist in the database", 404);
+
         await Users.update(
           {
             firstName,
@@ -160,9 +171,12 @@ module.exports = {
     const id = req.params.id;
 
     try {
+
       const response = await Users.findByPk(id, {
         attributes: ["firstName", "lastName", "email", "createdAt"],
       });
+
+      if(userExist.softDeletes) throw new ErrorObject("the id does not exist in the database", 404);
 
       endpointResponse({
         res,
