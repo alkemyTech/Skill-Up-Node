@@ -33,6 +33,7 @@ const router = express.Router();
  *             type: string
  *           avatar:
  *             type: string
+ *             format: binary
  *           roleId:
  *             type: integer
  *             default: 2
@@ -84,6 +85,14 @@ const router = express.Router();
  *     requestBody:
  *       description: Get all users
  *       content:
+ *         multipart/form-data:
+ *            schema: 
+ *              $ref: '#/components/schemas/User'
+ *            example:
+ *              firstName: luis
+ *              lastName: de la espriella
+ *              email: luis@example.com
+ *              password: prueba
  *         application/json:
  *            schema: 
  *              $ref: '#/components/schemas/User'
@@ -181,6 +190,14 @@ router.post("/", avatarUpload, validateRequestSchema(createUserSchema), createUs
  *     requestBody:
  *          description: Update a user by id
  *          content:
+ *            multipart/form-data:
+ *               schema: 
+ *                 $ref: '#/components/schemas/User'
+ *               example:
+ *                 firstName: luis
+ *                 lastName: de la espriella
+ *                 email: luis@example.com
+ *                 password: prueba
  *            application/json:
  *              schema:
  *                $ref: '#/components/schemas/User'
