@@ -1,14 +1,11 @@
 
-// const loginSchema = [
-//   check("email").notEmpty().isEmail(),
-//   check("password").notEmpty(),
-// ];
 
 module.exports = {
   email: {
     in: ['body'],
+    notEmpty:true,
     isEmail: {
-      errorMessage: "please enter email"
+      errorMessage: "please enter a valid email"
     }
   },
   password: {

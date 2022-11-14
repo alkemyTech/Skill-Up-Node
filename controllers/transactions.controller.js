@@ -2,25 +2,31 @@ const createHttpError = require("http-errors");
 const { Transactions, Users, Categories } = require("../database/models");
 const { endpointResponse } = require("../helpers/success");
 const { catchAsync } = require("../helpers/catchAsync");
-const { encode, decode } = require("../middlewares/jwt/jwt-methods")
-const {transactionPayload, transactionResponse} = require("../helpers/tokenPayloads")
-const { ErrorObject } = require('../helpers/error')
+const { encode } = require("../helpers/jwtMethods");
+const { ErrorObject } = require("../helpers/error");
 
 module.exports = {
   postCreateTransaction: catchAsync(async (req, res, next) => {
     try {
       req.body.date = new Date();
-      const {id, userId, description, amount, date, categoryId} = await Transactions.create(req.body);
-      const user = await Users.findByPk(userId)
-      const category = await Categories.findByPk(categoryId)
+      const { id, userId, description, amount, date, categoryId } =
+        await Transactions.create(req.body);
+      const user = await Users.findByPk(userId);
+      const category = await Categories.findByPk(categoryId);
 
-      if(amount <= 0) throw new ErrorObject('Amount must be greater than 0.', 422)
-      if(!user) throw new ErrorObject('User not found.', 404);
-      if(!category) throw new ErrorObject('Category not found.', 404);
+      if (amount <= 0)
+        throw new ErrorObject("Amount must be greater than 0.", 422);
+      if (!user) throw new ErrorObject("User not found.", 404);
+      if (!category) throw new ErrorObject("Category not found.", 404);
 
-      const payload = transactionPayload(id, userId)
-      const token = await encode(payload)
-      const response = transactionResponse(description, amount, date, token)
+      const payload = { id, userId };
+      const token = encode(payload);
+      const response = {
+        description,
+        amount,
+        date,
+        token,
+      };
 
       endpointResponse({
         res,
@@ -38,13 +44,16 @@ module.exports = {
   getFindTransaction: catchAsync(async (req, res, next) => {
     try {
       const { id } = req.params;
-      const {userId, description, amount, date} = await Transactions.findByPk(id);
+      const { userId, description, amount, date } = await Transactions.findByPk(
+        id
+      );
 
-      if (!userId) throw new ErrorObject("The transaction could not be found", 404);
-      
-      const payload = transactionPayload(id, userId)
-      const token = await encode(payload)
-      const response = transactionResponse(description, amount, date, token)
+      if (!userId)
+        throw new ErrorObject("The transaction could not be found", 404);
+
+      const payload = {id, userId}
+      const token = encode(payload);
+      const response = { description, amount, date, token };
 
       endpointResponse({
         res,
@@ -66,14 +75,16 @@ module.exports = {
         where: { id: `${id}` },
       });
 
-      if(!response) throw new ErrorObject("id the transaction don't exist", 404); 
+      if (!response)
+        throw new ErrorObject("id the transaction don't exist", 404);
 
-      const user = await Users.findByPk(req.body.userId)
-      const category = await Categories.findByPk(req.body.categoryId)
+      const user = await Users.findByPk(req.body.userId);
+      const category = await Categories.findByPk(req.body.categoryId);
 
-      if(req.body.amount <= 0) throw new ErrorObject('Amount must be greater than 0.', 422)
-      if(!user) throw new ErrorObject('User not found.', 404);
-      if(!category) throw new ErrorObject('Category not found.', 404);
+      if (req.body.amount <= 0)
+        throw new ErrorObject("Amount must be greater than 0.", 422);
+      if (!user) throw new ErrorObject("User not found.", 404);
+      if (!category) throw new ErrorObject("Category not found.", 404);
 
       endpointResponse({
         res,
@@ -108,7 +119,7 @@ module.exports = {
       }
       datos.offset = datos.offset * 10;
       datos.next = ++datos.aux;
-      
+
       const idQuery = req.query.userId;
 
       if (idQuery) {
@@ -118,7 +129,8 @@ module.exports = {
         datos.paginas = Math.ceil(datos.count / 10);
 
         const user = await Users.findByPk(idQuery);
-        if (!user) throw new ErrorObject("User not found. Check the data entered", 404);
+        if (!user)
+          throw new ErrorObject("User not found. Check the data entered", 404);
 
         const responseId = await Transactions.findAll({
           where: { userId: idQuery },
@@ -128,14 +140,10 @@ module.exports = {
 
         const allTransactionsResponse = await Promise.all(
           responseId.map(async (t) => {
-            const payload = transactionPayload(t.id, t.userId);
-            const token = await encode(payload);
-            const response = transactionResponse(
-              t.description,
-              t.amount,
-              t.date,
-              token
-            );
+            const {id, userId, description, amount, date } = t
+            const payload = {id, userId};
+            const token = encode(payload);
+            const response = {description, amount, date, token}
 
             return response;
           })
@@ -221,7 +229,7 @@ module.exports = {
   deleteTransaction: catchAsync(async (req, res, next) => {
     try {
       const id = req.params.id;
-      
+
       const validation = await Transactions.findOne({
         where: { id: `${id}` },
       });

@@ -3,7 +3,7 @@ const { Users } = require('../database/models')
 const { endpointResponse } = require('../helpers/success')
 const { catchAsync } = require('../helpers/catchAsync')
 const { Security } = require('../config/security')
-const {encode, decode} = require("../middlewares/jwt/jwt-methods")
+const {encode } = require("../helpers/jwtMethods")
 
 module.exports = {
     login: catchAsync(async (req, res, next) => {

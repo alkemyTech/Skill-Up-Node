@@ -6,9 +6,9 @@ module.exports = {
       },
       id: {
         in: ["params"],
-        isNumeric: {
-          errorMessage: 'Id must be numeric.',
-        },
+        isInt: true, 
+        errorMessage: 'Id must be numeric.',
+        
       }
     },
   };

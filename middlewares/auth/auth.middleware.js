@@ -1,5 +1,5 @@
 const { endpointResponse } = require("../../helpers/success");
-const { verify } = require("../jwt/jwt-methods");
+const { verify } = require("../../helpers/jwtMethods");
 
 require("dotenv").config();
 

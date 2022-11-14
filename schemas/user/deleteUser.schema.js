@@ -4,8 +4,8 @@ module.exports = {
       notEmpty: {
         errorMessage: "id is null"
       },
-      isNumeric: {
-        errorMessage: "id must be numeric"
-      }
+      isInt: true, 
+      errorMessage: "id must be numeric"
+      
     },
 }

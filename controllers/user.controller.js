@@ -3,8 +3,7 @@ const bcrypt = require("bcrypt");
 const { endpointResponse } = require("../helpers/success");
 const { catchAsync } = require("../helpers/catchAsync");
 const { Users } = require("../database/models");
-const { encode, decode } = require("../middlewares/jwt/jwt-methods")
-const {userPayload, userResponse} = require("../helpers/tokenPayloads");
+const { encode} = require("../helpers/jwtMethods")
 const { ErrorObject } = require("../helpers/error");
 
 async function encryptPassword(password) {
@@ -30,9 +29,11 @@ module.exports = {
         avatar,
       });
 
-      const payload = userPayload(password, user.id, roleId, email)
-      const token = await encode(payload)
-      const response = userResponse(firstName, lastName, email, token)
+      const {id} = user
+
+      const payload = { password, id, roleId, email }
+      const token = encode(payload)
+      const response = { firstName, lastName, email, token }
 
       endpointResponse({ res, message: "Users was created", body: response });
     } catch (error) {

@@ -6,16 +6,16 @@ const {
   editUser,
   getUserById,
 } = require("../controllers/user.controller");
-const createUserSchema = require("../schemas/user/createUserSchema");
-const deleteUserSchema = require("../schemas/user/deleteUserSchema");
-const editUserSchema = require("../schemas/user/editUserSchema");
+const createUserSchema = require("../schemas/user/createUser.schema");
+const deleteUserSchema = require("../schemas/user/deleteUser.schema");
+const editUserSchema = require("../schemas/user/editUser.schema");
 const {
   validateRequestSchema,
-} = require("../middlewares/validation/validate-schema.middleware");
-const getByIdSchema = require("../schemas/user/getByIdSchema");
+} = require("../middlewares/validation/validateSchema.middleware");
+const getByIdSchema = require("../schemas/user/getById.schema");
 const avatarUpload = require("../middlewares/multer/avatarUpload");
-const userAuthMiddleware = require("../middlewares/auth/userAuth.middleware");
-const usersTokenAuthMiddleware = require("../middlewares/auth/usersTokenAuth.middleware");
+const ownershipMiddleware = require("../middlewares/auth/ownership.middleware");
+const authMiddleware = require("../middlewares/auth/auth.middleware");
 
 const router = express.Router();
 
@@ -142,7 +142,7 @@ const router = express.Router();
  *       '500':
  *         description: Internal Server Error
  */
-router.get("/", usersTokenAuthMiddleware, userAuthMiddleware, getAllUsers);
+router.get("/", authMiddleware, ownershipMiddleware, getAllUsers);
 router.post(
   "/",
   avatarUpload,
@@ -282,23 +282,23 @@ router.post(
 router.get(
   "/:id",
   validateRequestSchema(getByIdSchema),
-  usersTokenAuthMiddleware,
-  userAuthMiddleware,
+  authMiddleware,
+  ownershipMiddleware,
   getUserById
 );
 router.put(
   "/:id",
   avatarUpload,
   validateRequestSchema(editUserSchema),
-  usersTokenAuthMiddleware,
-  userAuthMiddleware,
+  authMiddleware,
+  ownershipMiddleware,
   editUser
 );
 router.delete(
   "/:id",
   validateRequestSchema(deleteUserSchema),
-  usersTokenAuthMiddleware,
-  userAuthMiddleware,
+  authMiddleware,
+  ownershipMiddleware,
   deleteUser
 );
 

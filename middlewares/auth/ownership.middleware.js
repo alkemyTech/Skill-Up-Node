@@ -1,6 +1,6 @@
 const { ErrorObject } = require("../../helpers/error");
 const { endpointResponse } = require("../../helpers/success");
-const {  decode } = require("../jwt/jwt-methods");
+const {  decode } = require("../../helpers/jwtMethods");
 
 module.exports = async (req, res, next) => {
   //Get Token from Headears

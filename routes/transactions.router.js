@@ -8,19 +8,19 @@ const {
 } = require("../controllers/transactions.controller");
 const {
   validateRequestSchema,
-} = require("../middlewares/validation/validate-schema.middleware");
+} = require("../middlewares/validation/validateSchema.middleware");
 
 const router = express.Router();
 
-const postTransactionSchema = require("../schemas/transaction/postTransactionSchema");
-const getTransactionSchema = require("../schemas/transaction/getTrensactionSchema");
+const postTransactionSchema = require("../schemas/transaction/postTransaction.schema");
+const getTransactionSchema = require("../schemas/transaction/getTransaction.schema");
 
-const getValidationById = require("../schemas/transaction/getTransactionsSchemaById");
-const putValidation = require("../schemas/transaction/putTransactionShema");
-const deleteValidation = require("../schemas/transaction/deleteTransactionsSchema");
+const getValidationById = require("../schemas/transaction/getTransactionById.schema");
+const putValidation = require("../schemas/transaction/putTransaction.schema");
+const deleteValidation = require("../schemas/transaction/deleteTransaction.schema");
 
-const userAuthMiddleware = require("../middlewares/auth/userAuth.middleware");
-const usersTokenAuthMiddleware = require("../middlewares/auth/usersTokenAuth.middleware");
+const ownershipMiddleware = require("../middlewares/auth/ownership.middleware");
+const authMiddleware = require("../middlewares/auth/auth.middleware");
 
 /**
  * @swagger
@@ -158,13 +158,13 @@ const usersTokenAuthMiddleware = require("../middlewares/auth/usersTokenAuth.mid
 router.get(
   "/",
   validateRequestSchema(getValidationById),
-  usersTokenAuthMiddleware,
+  authMiddleware,
   getAllTransactions
 );
 router.post(
   "/",
   validateRequestSchema(postTransactionSchema),
-  usersTokenAuthMiddleware,
+  authMiddleware,
   postCreateTransaction
 );
 
@@ -302,21 +302,21 @@ router.post(
 router.get(
   "/:id",
   validateRequestSchema(getTransactionSchema),
-  usersTokenAuthMiddleware,
+  authMiddleware,
   getFindTransaction
 );
 router.put(
   "/:id",
   validateRequestSchema(putValidation),
-  usersTokenAuthMiddleware,
-  userAuthMiddleware,
+  authMiddleware,
+  ownershipMiddleware,
   put
 );
 router.delete(
   "/:id",
   validateRequestSchema(deleteValidation),
-  usersTokenAuthMiddleware,
-  userAuthMiddleware,
+  authMiddleware,
+  ownershipMiddleware,
   deleteTransaction
 );
 
